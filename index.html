@@ -5,6 +5,68 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Sorting Visualizer</title>
+
+        <!-- Google Font -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;500;700&display=swap"
+            rel="stylesheet"
+        />
+
+        <!-- Font Awesome -->
+        <script
+            src="https://kit.fontawesome.com/a7a97018dd.js"
+            crossorigin="anonymous"
+        ></script>
+
+        <!-- Stylesheet -->
+        <link rel="stylesheet" href="css/style.css" />
     </head>
-    <body></body>
+
+    <body>
+        <nav>
+            <button class="btn btn-secondary" id="randomize">
+                <i class="fa-solid fa-shuffle"></i>
+                Randomize
+            </button>
+            <div class="input-value">
+                <label>Amount</label>
+                <input
+                    type="range"
+                    min="10"
+                    max="40"
+                    value="20"
+                    id="num-bars"
+                />
+            </div>
+            <div class="input-value">
+                <label>Speed</label>
+                <input
+                    type="range"
+                    min="1"
+                    max="10"
+                    value="5"
+                    id="sort-speed"
+                />
+            </div>
+            <div class="input-value">
+                <select id="algorithm">
+                    <option hidden disabled selected>Algorithm</option>
+                    <option value="bubble">Bubble Sort</option>
+                    <option value="quick">Quick Sort</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" id="start">
+                <i class="fa-solid fa-play"></i>
+                Start
+            </button>
+        </nav>
+        <div class="container" id="container"></div>
+
+        <!-- jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+        <script src="js/index.js"></script>
+    </body>
 </html>
