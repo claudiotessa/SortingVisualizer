@@ -7,16 +7,18 @@ let values = [];
 let sortSpeed = $("#sort-speed").val() * 100;
 
 let canGo = false;
+let numBars = 20;
 
 $("#randomize").click(() => {
-    values = generateBars();
+    values = generateBars(numBars);
     renderBars(values);
     canGo = false;
 });
 
-$("#num-bars").change(() => {
+$("#num-bars").change(function () {
     canGo = false;
-    values = generateBars();
+    numBars = $(this).val();
+    values = generateBars(numBars);
     renderBars(values);
 });
 
@@ -38,18 +40,11 @@ $("#start").click(function () {
             break;
         case "quick":
             values = quickSort(values);
+            console.log(values);
+            //endSortAnimation();
             break;
         case "counting":
             values = countingSort(values);
-            break;
-        case "radix":
-            values = radixSort(values);
-            break;
-        case "bucket":
-            values = bucketSort(values);
-            break;
-        case "heap":
-            values = heapSort(values);
             break;
         case "shell":
             values = shellSort(values);
@@ -62,8 +57,7 @@ $("#start").click(function () {
 });
 
 const delay = (time) => new Promise((resolve) => setTimeout(resolve, time));
-const generateBars = () => {
-    const numBars = $("#num-bars").val();
+const generateBars = (numBars) => {
     const array = [];
     for (let i = 0; i < numBars; i++) {
         const n = Math.floor(Math.random() * (MAX_BAR_HEIGHT - 5) + 5);
@@ -238,6 +232,10 @@ const quickSort = async (array, left = 0, right = array.length - 1) => {
     let index;
     if (array.length > 1) {
         index = await partition(array, left, right); //index returned from partition
+        console.log(
+            "🚀 ~ file: index.js ~ line 235 ~ quickSort ~ index",
+            index
+        );
         if (left < index - 1) {
             //more elements on the left side of the pivot
             quickSort(array, left, index - 1);
@@ -247,21 +245,89 @@ const quickSort = async (array, left = 0, right = array.length - 1) => {
             quickSort(array, index, right);
         }
     }
-    //endSortAnimation();
     return array;
 };
-const countingSort = async (array) => {};
-const radixSort = async (array) => {};
-const bucketSort = async (array) => {};
-const heapSort = async (array) => {};
-const shellSort = async (array) => {};
+const countingSort = async (array) => {
+    const min = array.reduce((acc, v) => (acc < v ? acc : v));
+    const max = array.reduce((acc, v) => (acc > v ? acc : v));
+    const count = new Map();
+
+    for (let i = min; i <= max; i++) {
+        count[i] = 0;
+    }
+    for (let i = 0; i < array.length; i++) {
+        if (!canGo) return;
+        count[array[i]] += 1;
+        container.children().eq(i).css({ background: SELECTION_COLORS[1] });
+        await delay(sortSpeed);
+        container.children().eq(i).css({ background: PRIMARY_COLOR });
+    }
+
+    const sortedArr = [];
+    let j = 0;
+    for (let i = min; i <= max; i++) {
+        while (count[i] > 0) {
+            if (!canGo) return;
+            sortedArr.push(i);
+            container
+                .children()
+                .eq(j)
+                .text(i)
+                .animate({ height: i + "vh" }, sortSpeed)
+                .css({ background: SELECTION_COLORS[0] });
+            await delay(sortSpeed);
+            container.children().eq(j).css({ background: PRIMARY_COLOR });
+            count[i]--;
+            j++;
+        }
+    }
+    endSortAnimation();
+    return sortedArr;
+};
+const shellSort = async (array) => {
+    let n = array.length;
+
+    for (let gap = Math.floor(n / 2); gap > 0; gap = Math.floor(gap / 2)) {
+        for (let i = gap; i < n; i += 1) {
+            let temp = array[i];
+
+            let j;
+            for (j = i; j >= gap && array[j - gap] > temp; j -= gap) {
+                if (!canGo) return;
+                array[j] = array[j - gap];
+                container
+                    .children()
+                    .eq(j)
+                    .text(array[j])
+                    .animate({ height: array[j] + "vh" }, sortSpeed)
+                    .css({ background: SELECTION_COLORS[0] });
+                await delay(sortSpeed);
+                container.children().eq(j).css({ background: PRIMARY_COLOR });
+            }
+
+            array[j] = temp;
+            await delay(sortSpeed);
+            container
+                .children()
+                .eq(j)
+                .text(array[j])
+                .animate({ height: array[j] + "vh" }, sortSpeed)
+                .css({ background: SELECTION_COLORS[0] });
+            await delay(sortSpeed);
+            container.children().eq(j).css({ background: PRIMARY_COLOR });
+        }
+    }
+    endSortAnimation();
+    return array;
+};
 
 const endSortAnimation = async () => {
     for (let i = 0; i < container.children().length; i++) {
         container.children().eq(i).css({ background: "#00ff00" });
         await delay(50);
     }
+    await delay(500);
     container.children().css({ background: PRIMARY_COLOR });
 };
-values = generateBars();
+values = generateBars(numBars);
 renderBars(values);
